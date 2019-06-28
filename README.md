@@ -71,9 +71,9 @@ Its only pain point is that to be efficient every class and type must be registe
 
 ## More examples:
 
-For Java Examples see:
+For More Examples see:
 
-[Tests](https://github.com/gerritjvv/encode/tree/master/encode-core/src/test/java/encode)
+[Tests](https://github.com/gerritjvv/codex/tree/master/test/codex)
 
 
 ## Performance
