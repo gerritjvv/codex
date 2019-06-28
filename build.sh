@@ -13,7 +13,7 @@ lein test && lein install
 
 release () {
 
-lein deploy
+lein deploy clojars
 
 }
 
