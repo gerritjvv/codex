@@ -8,13 +8,6 @@ Wraps over: https://github.com/gerritjvv/encode
 
 ## Usage
 
-*Important*
-
-Encryption and compression encoders are not re-useable and must be created
-every time you want to use them.
-
-The kryo encoder is safe to reuse and is thread-safe.
-
 *Default Encoder*
 
 ```clojure

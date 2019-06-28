@@ -38,7 +38,6 @@
 (defmethod crypto-encoder :aes-gcm [_ key encoder]
   (CryptoEncoder/getGCMInstance ^Key$ExpandedKey key encoder))
 
-;;Important: encryption and compression encoders are not re-useable
 (defn lz4-encoder ^Encoder [^Encoder encoder]
   (when (instance? CryptoEncoder encoder)
     (throw (RuntimeException.
@@ -52,9 +51,7 @@
 
 (defn default-encoder
   "Returns an encoder that kryo-encodes, then lz4 compresses and then encrypts using EAS-CBC-HMAC
-   the HMAC used 256 or 512 depends on the key passed in
-
-   Important: encryption and compression encoders are not re-useable"
+   the HMAC used 256 or 512 depends on the key passed in"
   [^Key$ExpandedKey key]
   (crypto-encoder :aes-cbc-hmac key (lz4-encoder (kryo-encoder))))
 
