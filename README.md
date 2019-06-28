@@ -4,6 +4,7 @@ Simple fast library that compress, encrypt and encode data, for session storage 
 
 Wraps over: https://github.com/gerritjvv/encode
 
+[![Clojars Project](https://img.shields.io/clojars/v/com.github.gerritjvv/codex.svg)](https://clojars.org/com.github.gerritjvv/codex)
 
 ## Usage
 
