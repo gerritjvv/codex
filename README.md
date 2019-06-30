@@ -8,11 +8,17 @@ Wraps over: https://github.com/gerritjvv/encode
 
 ## Usage
 
+**Important**
+
+Always call `(codex/register-serialisers!)` once to ensure all the clojure serializers are added. 
+
 *Default Encoder*
 
 ```clojure
 
 (require '[codex.core :as codex])
+
+(codex/register-serialisers!)
 
 ;; the default encoder uses :aes-cbc-hmac( lz4 (kryo ...)))
 (def encoder (codex/default-encoder (codex/expand-pass :sha256+hmac512 "secret")))
@@ -38,6 +44,8 @@ Wraps over: https://github.com/gerritjvv/encode
 *Combining Encoders*
 ```clojure
 (require '[codex.core :as codex])
+
+(codex/register-serialisers!)
 
 (def encoder (->>
                   (codex/kryo-encoder)                              ;; convert to bytes
