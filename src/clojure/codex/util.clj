@@ -9,6 +9,10 @@
   String
   (-as-bytes [v] (.getBytes (str v) "UTF-8")))
 
+(extend-protocol Bytes
+  nil
+  (-as-bytes [_] nil))
+
 
 (extend-protocol Bytes
   (Class/forName "[B")

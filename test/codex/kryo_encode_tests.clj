@@ -50,7 +50,8 @@
   (let [_ (codex/register-record! MyRecord)
 
         data (->MyRecord 1 2)
-        encoder (codex/default-encoder (codex/expand-pass-default "secret"))
+        encoder (codex/default-encoder (codex/gen-expanded-key :sha128+hmac256
+                                                               (codex/derive-pass-default "test-salt" "secret")))
         encoded-data (codex/encode encoder data)
         decoded-data (codex/decode encoder encoded-data)]
 

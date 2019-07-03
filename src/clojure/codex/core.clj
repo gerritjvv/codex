@@ -1,30 +1,60 @@
 (ns codex.core
 
   (:require [codex.util :as util])
-  (:import (crypto Key$ExpandedKey Key$KeySize)
+  (:import (crypto Key$ExpandedKey Key$KeySize Key)
            (codex.encode Encoder KryoEncoder CryptoEncoder Lz4Encoder)
-           (clojure.lang PersistentArrayMap Keyword Symbol PersistentHashMap PersistentHashSet PersistentList PersistentVector BigInt PersistentVector$ChunkedSeq)
+           (clojure.lang PersistentArrayMap Keyword Symbol PersistentHashMap PersistentHashSet PersistentList PersistentVector BigInt PersistentVector$ChunkedSeq LazySeq)
            (codex.serializers PersistentArrayMapSerde KeywordSerde PersistentMapSerde SymbolSerde SeqSerde PersistentHashSetSerde PersistentListSerde PersistentVectorSerde BigIntSerde PersistentRecordSerde)
            (com.esotericsoftware.kryo Serializer Registration)))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;
+
+(defmulti gen-expanded-key (fn [t k] t) :default :sha256+hmac512)
+
+(defmethod gen-expanded-key :sha128+hmac256 [_ k]
+  (.genKeysHmacSha (Key$KeySize/AES_128) ^"[B" (util/-as-bytes k)))
+
+(defmethod gen-expanded-key :sha256+hmac512 [_ k]
+  (.genKeysHmacSha (Key$KeySize/AES_256) ^"[B" (util/-as-bytes k)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; expanded keys
-;;;; use (expand-pass :sha256+hmac512 "mypass")
-(defmulti expand-pass (fn [t pass] t) :default :sha256+hmac512)
+;;;; use (expand-pass :sha256+hmac512 "salt" "mypass")
+;;;;     (expand-pass :sha128+hmac256 "salt" "mypass")
 
-(defmethod expand-pass :sha128+hmac256 [_ pass]
-  (.genKeysHmacSha (Key$KeySize/AES_128) ^"[B" (util/-as-bytes pass)))
+(defmulti derive-pass (fn [t salt pass] t) :default :sha256+hmac512)
 
-(defmethod expand-pass :sha256+hmac512 [_ pass]
-  (.genKeysHmacSha (Key$KeySize/AES_256) ^"[B" (util/-as-bytes pass)))
+(defmethod derive-pass :sha128+hmac256 [_ salt pass]
+  (Key/deriveHmac256FromPass (util/-as-bytes salt) (util/-as-bytes pass)))
 
+(defmethod derive-pass :sha256+hmac512 [_ salt pass]
+  (Key/deriveHmac512FromPass (util/-as-bytes salt) (util/-as-bytes pass)))
 
-(defn expand-pass-default [pass]
-  (expand-pass :sha256+hmac512 pass))
+(defn derive-pass-default
+  ([pass]
+   (derive-pass-default nil pass))
+  ([salt pass]
+   (derive-pass :sha256+hmac512 salt pass)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; expand an already pseudo random key
+;;;  if you don't know what you're doing, use the derive-pass function
+;;;
+(defmulti expand-key (fn [t pass] t) :default :sha128+hmac256)
+
+(defmethod expand-key :sha128+hmac256 [_ k]
+  (Key/genHmacSha256 (util/-as-bytes k)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Crypto encoder wrapper
 
+(defn ensure-expanded-key ^Key$ExpandedKey [k]
+  (if (instance? Key$ExpandedKey k)
+    k
+    (gen-expanded-key :sha256+hmac512 k)))
 
 ;Create an encoder that encrypt using AES+CBC or AES+GCM.
 ;           The bits used depends on the key:
@@ -32,11 +62,11 @@
 ;            For AES+GCM  use :sha128+hmac256
 (defmulti crypto-encoder (fn [t k encoder] t))
 
-(defmethod crypto-encoder :aes-cbc-hmac [_ key encoder]
-  (CryptoEncoder/getCBCHmacInstance ^Key$ExpandedKey key encoder))
+(defmethod crypto-encoder :aes-cbc-hmac [_ k encoder]
+  (CryptoEncoder/getCBCHmacInstance ^Key$ExpandedKey (ensure-expanded-key k) encoder))
 
-(defmethod crypto-encoder :aes-gcm [_ key encoder]
-  (CryptoEncoder/getGCMInstance ^Key$ExpandedKey key encoder))
+(defmethod crypto-encoder :aes-gcm [_ k encoder]
+  (CryptoEncoder/getGCMInstance ^Key$ExpandedKey (ensure-expanded-key k) encoder))
 
 (defn lz4-encoder ^Encoder [^Encoder encoder]
   (when (instance? CryptoEncoder encoder)
@@ -73,7 +103,7 @@
 (defn register-class!
   "Kryo serde registration"
   [clazz]
-  (KryoEncoder/register clazz))
+  (KryoEncoder/register ^Class clazz))
 
 (defmacro register-record! [^Class r]
   `(KryoEncoder/register ~r
@@ -103,6 +133,7 @@
                 [PersistentVector (PersistentVectorSerde.)]
                 [PersistentList (PersistentListSerde.)]
                 [PersistentVector$ChunkedSeq (SeqSerde.)]
+                [LazySeq (SeqSerde.)]
 
                 [BigInt (BigIntSerde.)]
                 ]]
