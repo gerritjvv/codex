@@ -63,7 +63,7 @@
 (defmulti crypto-encoder (fn [t k encoder] t))
 
 (defmethod crypto-encoder :aes-cbc-hmac [_ k encoder]
-  (CryptoEncoder/getCBCHmacInstance ^Key$ExpandedKey (ensure-expanded-key k) encoder))
+  (CryptoEncoder/getCBCHmacInstance 0 "SunJCE" ^Key$ExpandedKey (ensure-expanded-key k) encoder))
 
 (defmethod crypto-encoder :aes-gcm [_ k encoder]
   (CryptoEncoder/getGCMInstance ^Key$ExpandedKey (ensure-expanded-key k) encoder))
