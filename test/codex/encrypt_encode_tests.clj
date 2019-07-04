@@ -16,8 +16,8 @@
                   (codex/kryo-encoder)                              ;; convert to bytes
                   (codex/lz4-encoder)                               ;; compress
                   (codex/crypto-encoder                             ;; encrypt
-                    :aes-cbc-hmac
-                    (codex/derive-pass :sha256+hmac512 "salt" "secret")
+                    :aes-gcm
+                    (codex/derive-pass :sha128+hmac256 "salt" "secret")
                     ))
 
         data {:a 1 :b {:c [1 2 3]}}

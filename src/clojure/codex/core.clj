@@ -56,6 +56,12 @@
     k
     (gen-expanded-key :sha256+hmac512 k)))
 
+
+(defn ensure-expanded-gcm-key ^Key$ExpandedKey [k]
+  (if (instance? Key$ExpandedKey k)
+    k
+    (gen-expanded-key :sha128+hmac256 k)))
+
 ;Create an encoder that encrypt using AES+CBC or AES+GCM.
 ;           The bits used depends on the key:
 ;            For AES+CBC+HMAC512 use a of :sha256+hmac512
@@ -66,7 +72,7 @@
   (CryptoEncoder/getCBCHmacInstance 0 "SunJCE" ^Key$ExpandedKey (ensure-expanded-key k) encoder))
 
 (defmethod crypto-encoder :aes-gcm [_ k encoder]
-  (CryptoEncoder/getGCMInstance ^Key$ExpandedKey (ensure-expanded-key k) encoder))
+  (CryptoEncoder/getGCMInstance ^Key$ExpandedKey (ensure-expanded-gcm-key k) encoder))
 
 (defn lz4-encoder ^Encoder [^Encoder encoder]
   (when (instance? CryptoEncoder encoder)
