@@ -4,10 +4,9 @@
   (:import (crypto Key$ExpandedKey Key$KeySize Key)
            (codex.encode Encoder KryoEncoder CryptoEncoder Lz4Encoder)
            (clojure.lang PersistentArrayMap Keyword Symbol PersistentHashMap PersistentHashSet PersistentList PersistentVector BigInt PersistentVector$ChunkedSeq LazySeq)
-           (codex.serializers PersistentArrayMapSerde KeywordSerde PersistentMapSerde SymbolSerde SeqSerde PersistentHashSetSerde PersistentListSerde PersistentVectorSerde BigIntSerde PersistentRecordSerde)
+           (codex.serializers PersistentArrayMapSerde KeywordSerde PersistentMapSerde SymbolSerde SeqSerde PersistentHashSetSerde PersistentListSerde PersistentVectorSerde BigIntSerde PersistentRecordSerde JodaDateTimeSerde)
            (com.esotericsoftware.kryo Serializer Registration)
-           (de.javakaffee.kryoserializers.jodatime JodaDateTimeSerializer JodaLocalDateSerializer JodaIntervalSerializer JodaLocalDateTimeSerializer JodaLocalTimeSerializer)
-           (org.joda.time DateTime LocalDate Interval LocalDateTime LocalTime)))
+           (org.joda.time DateTime)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -145,11 +144,7 @@
 
                 [BigInt (BigIntSerde.)]
 
-                [DateTime (JodaDateTimeSerializer.)]
-                [LocalDate (JodaLocalDateSerializer.)]
-                [Interval (JodaIntervalSerializer.)]
-                [LocalDateTime (JodaLocalDateTimeSerializer.)]
-                [LocalTime (JodaLocalTimeSerializer.)]
+                [DateTime (JodaDateTimeSerde.)]
 
                 ]]
     (doseq[[clazz serde] serdes]
