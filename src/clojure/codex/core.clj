@@ -5,7 +5,9 @@
            (codex.encode Encoder KryoEncoder CryptoEncoder Lz4Encoder)
            (clojure.lang PersistentArrayMap Keyword Symbol PersistentHashMap PersistentHashSet PersistentList PersistentVector BigInt PersistentVector$ChunkedSeq LazySeq)
            (codex.serializers PersistentArrayMapSerde KeywordSerde PersistentMapSerde SymbolSerde SeqSerde PersistentHashSetSerde PersistentListSerde PersistentVectorSerde BigIntSerde PersistentRecordSerde)
-           (com.esotericsoftware.kryo Serializer Registration)))
+           (com.esotericsoftware.kryo Serializer Registration)
+           (de.javakaffee.kryoserializers.jodatime JodaDateTimeSerializer JodaLocalDateSerializer JodaIntervalSerializer JodaLocalDateTimeSerializer JodaLocalTimeSerializer)
+           (org.joda.time DateTime LocalDate Interval LocalDateTime LocalTime)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -142,6 +144,13 @@
                 [LazySeq (SeqSerde.)]
 
                 [BigInt (BigIntSerde.)]
+
+                [DateTime (JodaDateTimeSerializer.)]
+                [LocalDate (JodaLocalDateSerializer.)]
+                [Interval (JodaIntervalSerializer.)]
+                [LocalDateTime (JodaLocalDateTimeSerializer.)]
+                [LocalTime (JodaLocalTimeSerializer.)]
+
                 ]]
     (doseq[[clazz serde] serdes]
       (KryoEncoder/register ^Class clazz ^Serializer serde))))
