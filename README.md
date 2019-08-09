@@ -77,6 +77,24 @@ Its only pain point is that to be efficient every class and type must be registe
 
 ```
 
+### Important!! please read.
+
+The Kryo library uses integers to identity types and serializers when reading a message.  
+When you do not specify this integer (as with the functions above), the order is important.  
+This is not an issue if the messages you store are not long lived. If they are, like disk persistent  
+you must use the `Registration` class and hard code a "id" integer to avoid situations where if you
+change the order (this is easy to get wrong) your messages will not be readable.  
+
+See:
+```
+register-registration
+;; and
+serializers.JodaDateTimeSerde 
+```
+
+for examples.
+
+
 ## More examples:
 
 For More Examples see:
