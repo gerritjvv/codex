@@ -1,4 +1,4 @@
-(defproject com.github.gerritjvv/codex "1.2.6"
+(defproject com.github.gerritjvv/codex "1.2.7"
   :description "Simple fast library that compress, encrypt and encode data, for session storage and other use-cases"
   :url "https://github.com/gerritjvv/codex"
   :license {:name "Apache License 2.0"

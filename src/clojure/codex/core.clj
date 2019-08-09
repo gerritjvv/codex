@@ -130,6 +130,8 @@
   "Register all the Kryo Clojure Serdes
    Is called as part of this namespace"
   []
+  ;;; Important do not change these.
+  ;; the order of the serializers matter.
   (let [serdes [
                 [Symbol (SymbolSerde.)]
                 [Keyword (KeywordSerde.)]
@@ -143,12 +145,13 @@
                 [LazySeq (SeqSerde.)]
 
                 [BigInt (BigIntSerde.)]
-
-                [DateTime (JodaDateTimeSerde.)]
-
                 ]]
     (doseq[[clazz serde] serdes]
-      (KryoEncoder/register ^Class clazz ^Serializer serde))))
+      (KryoEncoder/register ^Class clazz ^Serializer serde))
+
+
+    ;; use these registrations for newer additions
+    (KryoEncoder/register JodaDateTimeSerde/REGISTRATION)))
 
 ;;; register default clojure serializers
 (register-serialisers!)
