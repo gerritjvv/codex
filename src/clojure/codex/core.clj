@@ -4,7 +4,7 @@
   (:import (crypto Key$ExpandedKey Key$KeySize Key)
            (codex.encode Encoder KryoEncoder CryptoEncoder Lz4Encoder)
            (clojure.lang PersistentArrayMap Keyword Symbol PersistentHashMap PersistentHashSet PersistentList PersistentVector BigInt PersistentVector$ChunkedSeq LazySeq)
-           (codex.serializers PersistentArrayMapSerde KeywordSerde PersistentMapSerde SymbolSerde SeqSerde PersistentHashSetSerde PersistentListSerde PersistentVectorSerde BigIntSerde PersistentRecordSerde JodaDateTimeSerde)
+           (codex.serializers PersistentArrayMapSerde KeywordSerde PersistentMapSerde SymbolSerde SeqSerde PersistentHashSetSerde PersistentListSerde PersistentVectorSerde BigIntSerde PersistentRecordSerde JodaDateTimeSerde UUIDSerde)
            (com.esotericsoftware.kryo Serializer Registration)
            (org.joda.time DateTime)))
 
@@ -151,7 +151,8 @@
 
 
     ;; use these registrations for newer additions
-    (KryoEncoder/register JodaDateTimeSerde/REGISTRATION)))
+    (KryoEncoder/register JodaDateTimeSerde/REGISTRATION)
+    (KryoEncoder/register UUIDSerde/REGISTRATION)))
 
 ;;; register default clojure serializers
 (register-serialisers!)

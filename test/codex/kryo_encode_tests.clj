@@ -1,7 +1,8 @@
 (ns codex.kryo-encode-tests
   (:require [clojure.test :refer :all]
             [codex.core :refer [kryo-encoder encode decode]]
-            [codex.core :as codex]))
+            [codex.core :as codex])
+  (:import (java.util UUID)))
 
 
 
@@ -30,7 +31,8 @@
               (float 1.0)
               \a
               '(1 2 3)
-              (seq [1 2 3])]]
+              (seq [1 2 3])
+              (UUID/randomUUID)]]
 
     (doseq [v data]
       (let [v2 (decode encoder (encode encoder v))]
